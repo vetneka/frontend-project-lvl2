@@ -9,7 +9,6 @@ const { program } = commander;
 
 program
   .version(VERSION)
-  .description(DESCRIPTION)
-  .helpOption('-h, --help', 'output usage information');
+  .description(DESCRIPTION);
 
 program.parse();
