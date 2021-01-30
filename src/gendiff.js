@@ -8,9 +8,7 @@ const createDiff = (obj1, obj2) => {
     unchange: ' ',
   };
 
-  const obj1Keys = Object.keys(obj1);
-  const obj2Keys = Object.keys(obj2);
-  const unionKeys = _.union(obj1Keys, obj2Keys);
+  const unionKeys = _.union(Object.keys(obj1), Object.keys(obj2));
   const sortedUnionKeys = unionKeys.sort();
 
   const diff = sortedUnionKeys
@@ -28,10 +26,19 @@ const createDiff = (obj1, obj2) => {
         `  ${STATE_TYPES.delete} ${key}: ${obj1[key]}`,
         `  ${STATE_TYPES.add} ${key}: ${obj2[key]}`,
       ].join('\n');
-    })
-    .join('\n');
+    });
 
   return diff;
+};
+
+const formatDiffForOutput = (diff) => {
+  const formattedDiff = diff.join('\n');
+
+  return [
+    '{',
+    formattedDiff,
+    '}',
+  ].join('\n');
 };
 
 const genDiff = (filepath1, filepath2) => {
@@ -44,8 +51,9 @@ const genDiff = (filepath1, filepath2) => {
   const obj2 = JSON.parse(contentFile2);
 
   const diff = createDiff(obj1, obj2);
+  const formattedDiff = formatDiffForOutput(diff);
 
-  return diff;
+  return formattedDiff;
 };
 
 export default genDiff;
