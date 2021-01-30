@@ -9,6 +9,8 @@ const { program } = commander;
 
 program
   .version(VERSION)
-  .description(DESCRIPTION);
+  .description(DESCRIPTION)
+  .arguments('<filepath1> <filepath2>')
+  .option('-f, --format [type]', 'output format');
 
-program.parse();
+program.parse(process.argv);
