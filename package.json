@@ -27,7 +27,8 @@
     "husky": "^4.3.8"
   },
   "dependencies": {
-    "commander": "^7.0.0"
+    "commander": "^7.0.0",
+    "lodash": "^4.17.20"
   },
   "husky": {
     "hooks": {
