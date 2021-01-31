@@ -31,7 +31,11 @@ const createDiff = (obj1, obj2) => {
 };
 
 const formatDiffForOutput = (diff) => {
-  const formattedDiff = diff.join('\n');
+  const marginLeft = '  ';
+
+  const formattedDiff = diff
+    .map((line) => `${marginLeft}${line}`)
+    .join('\n');
 
   return [
     '{',
