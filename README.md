@@ -6,6 +6,10 @@
 
 This is the second training project as part of the Hexlet course in the frontend developer profession.
 
+| Step, № | Description                          | Asciinema                                  |
+|---------| -------------------------------------|:------------------------------------------:|
+| `3`     | Comparison of flat files (JSON)      | [link](https://asciinema.org/a/388166)     |
+
 # Install
 ```
 $ npm install
