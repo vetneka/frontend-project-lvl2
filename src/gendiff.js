@@ -1,32 +1,30 @@
 import fs from 'fs';
 import _ from 'lodash';
 
-const createDiff = (obj1, obj2) => {
-  const STATE_TYPES = {
-    add: '+',
-    delete: '-',
-    unchange: ' ',
-  };
+const DIFF_CHANGE_STATES = {
+  add: '+',
+  delete: '-',
+  unchange: ' ',
+};
 
+const createDiff = (obj1, obj2) => {
   const unionKeys = _.union(Object.keys(obj1), Object.keys(obj2));
   const sortedUnionKeys = unionKeys.sort();
 
-  const diff = sortedUnionKeys
-    .map((key) => {
-      if (!_.has(obj1, key)) {
-        return `  ${STATE_TYPES.add} ${key}: ${obj2[key]}`;
-      }
-      if (!_.has(obj2, key)) {
-        return `  ${STATE_TYPES.delete} ${key}: ${obj1[key]}`;
-      }
-      if (obj1[key] === obj2[key]) {
-        return `  ${STATE_TYPES.unchange} ${key}: ${obj1[key]}`;
-      }
-      return [
-        `  ${STATE_TYPES.delete} ${key}: ${obj1[key]}`,
-        `  ${STATE_TYPES.add} ${key}: ${obj2[key]}`,
-      ].join('\n');
-    });
+  const diff = [];
+
+  sortedUnionKeys.forEach((key) => {
+    if (!_.has(obj1, key)) {
+      diff.push(`${DIFF_CHANGE_STATES.add} ${key}: ${obj2[key]}`);
+    } else if (!_.has(obj2, key)) {
+      diff.push(`${DIFF_CHANGE_STATES.delete} ${key}: ${obj1[key]}`);
+    } else if (obj1[key] === obj2[key]) {
+      diff.push(`${DIFF_CHANGE_STATES.unchange} ${key}: ${obj1[key]}`);
+    } else {
+      diff.push(`${DIFF_CHANGE_STATES.delete} ${key}: ${obj1[key]}`);
+      diff.push(`${DIFF_CHANGE_STATES.add} ${key}: ${obj2[key]}`);
+    }
+  });
 
   return diff;
 };
