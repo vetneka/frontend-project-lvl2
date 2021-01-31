@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import _ from 'lodash';
 
 const DIFF_CHANGE_STATES = {
@@ -39,14 +40,20 @@ const formatDiffForOutput = (diff) => {
   ].join('\n');
 };
 
+const readFile = (filepath) => {
+  const fullFilepath = path.resolve(process.cwd(), filepath);
+  const data = fs.readFileSync(fullFilepath).toString();
+  return data;
+};
+
+const parseToJSON = (data) => JSON.parse(data);
+
 const genDiff = (filepath1, filepath2) => {
-  const ENCODING_TYPE = 'utf-8';
+  const data1 = readFile(filepath1);
+  const data2 = readFile(filepath2);
 
-  const contentFile1 = fs.readFileSync(filepath1, { encoding: ENCODING_TYPE });
-  const contentFile2 = fs.readFileSync(filepath2, { encoding: ENCODING_TYPE });
-
-  const obj1 = JSON.parse(contentFile1);
-  const obj2 = JSON.parse(contentFile2);
+  const obj1 = parseToJSON(data1);
+  const obj2 = parseToJSON(data2);
 
   const diff = createDiff(obj1, obj2);
   const formattedDiff = formatDiffForOutput(diff);
