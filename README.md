@@ -1,5 +1,5 @@
 [![Actions Status](https://github.com/vetneka/frontend-project-lvl2/workflows/hexlet-check/badge.svg)](https://github.com/vetneka/frontend-project-lvl2/actions)
-[![Build Status](https://github.com/vetneka/frontend-project-lvl2/workflows/eslint/badge.svg)](https://github.com/vetneka/frontend-project-lvl2/actions)
+[![Build Status](https://github.com/vetneka/frontend-project-lvl2/workflows/build/badge.svg)](https://github.com/vetneka/frontend-project-lvl2/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/2aa3bdec005def0a5cf8/maintainability)](https://codeclimate.com/github/vetneka/frontend-project-lvl2/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/2aa3bdec005def0a5cf8/test_coverage)](https://codeclimate.com/github/vetneka/frontend-project-lvl2/test_coverage)
 
@@ -14,4 +14,13 @@ This is the second training project as part of the Hexlet course in the frontend
 # Install
 ```
 $ npm install
+```
+
+# Run tests
+```
+$ make test
+
+// or
+
+$ make test-coverage
 ```
