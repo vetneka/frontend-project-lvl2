@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
+import getFileParser from './parsers.js';
 
 const DIFF_CHANGE_STATES = {
   add: '+',
@@ -50,14 +51,23 @@ const readFile = (filepath) => {
   return data;
 };
 
-const parseToJSON = (data) => JSON.parse(data);
+const getFIleExtension = (filepath) => path.extname(filepath).slice(1);
 
 const genDiff = (filepath1, filepath2) => {
+  const fileExtension1 = getFIleExtension(filepath1);
+  const fileExtension2 = getFIleExtension(filepath2);
+
+  if (fileExtension1 !== fileExtension2) {
+    throw new Error(`Files extensions should be equal! But now file1 extension = ${fileExtension1}, file2 extension = ${fileExtension2}`);
+  }
+
   const data1 = readFile(filepath1);
   const data2 = readFile(filepath2);
 
-  const obj1 = parseToJSON(data1);
-  const obj2 = parseToJSON(data2);
+  const parseFile = getFileParser(fileExtension1);
+
+  const obj1 = parseFile(data1);
+  const obj2 = parseFile(data2);
 
   const diff = createDiff(obj1, obj2);
   const formattedDiff = formatDiffForOutput(diff);
