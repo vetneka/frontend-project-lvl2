@@ -17,3 +17,7 @@ lint:
 # запуск тестов
 test:
 	npx -n '--experimental-vm-modules' jest
+
+# запуск расчета покрытия тестами
+test-coverage:
+	npx jest -- --coverage --coverageProvider=v8
