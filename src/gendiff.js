@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import getFileParser from './parsers.js';
+import getDiffFormatter from './formatters.js';
 
 const DIFF_NODE_STATUS = {
   added: 'added',
@@ -66,7 +67,7 @@ const readFile = (filepath) => {
 
 const getFIleExtension = (filepath) => path.extname(filepath).slice(1);
 
-const genDiff = (filepath1, filepath2) => {
+const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
   const fileExtension1 = getFIleExtension(filepath1);
   const fileExtension2 = getFIleExtension(filepath2);
 
@@ -84,7 +85,10 @@ const genDiff = (filepath1, filepath2) => {
 
   const deepDiff = createDeepDiff(obj1, obj2);
 
-  return deepDiff;
+  const formatDiff = getDiffFormatter(formatName);
+  const formattedDiff = formatDiff(deepDiff);
+
+  return formattedDiff;
 };
 
 export default genDiff;
