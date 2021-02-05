@@ -3,46 +3,59 @@ import path from 'path';
 import _ from 'lodash';
 import getFileParser from './parsers.js';
 
-const DIFF_CHANGE_STATES = {
-  add: '+',
-  delete: '-',
-  unchange: ' ',
+const DIFF_NODE_STATUS = {
+  added: 'added',
+  removed: 'removed',
+  unchanged: 'unchanged',
 };
 
-const createDiff = (obj1, obj2) => {
+const createDiffNode = (name, status, value) => {
+  const diffNode = {
+    name,
+    status,
+    value,
+  };
+
+  if (_.isArray(value)) {
+    diffNode.type = 'array';
+  } else if (_.isObject(value)) {
+    diffNode.type = 'object';
+  } else {
+    diffNode.type = 'primitive';
+  }
+
+  return diffNode;
+};
+
+const createDeepDiff = (obj1 = {}, obj2 = {}) => {
   const unionKeys = _.union(Object.keys(obj1), Object.keys(obj2));
   const sortedUnionKeys = unionKeys.sort();
 
-  const diff = [];
+  return sortedUnionKeys.flatMap((key) => {
+    const value1 = obj1[key];
+    const value2 = obj2[key];
 
-  sortedUnionKeys.forEach((key) => {
     if (!_.has(obj1, key)) {
-      diff.push(`${DIFF_CHANGE_STATES.add} ${key}: ${obj2[key]}`);
-    } else if (!_.has(obj2, key)) {
-      diff.push(`${DIFF_CHANGE_STATES.delete} ${key}: ${obj1[key]}`);
-    } else if (obj1[key] === obj2[key]) {
-      diff.push(`${DIFF_CHANGE_STATES.unchange} ${key}: ${obj1[key]}`);
-    } else {
-      diff.push(`${DIFF_CHANGE_STATES.delete} ${key}: ${obj1[key]}`);
-      diff.push(`${DIFF_CHANGE_STATES.add} ${key}: ${obj2[key]}`);
+      return createDiffNode(key, DIFF_NODE_STATUS.added, value2);
     }
+
+    if (!_.has(obj2, key)) {
+      return createDiffNode(key, DIFF_NODE_STATUS.removed, value1);
+    }
+
+    if (value1 === value2) {
+      return createDiffNode(key, DIFF_NODE_STATUS.unchanged, value1);
+    }
+
+    if (!_.isObject(value1) || !_.isObject(value2)) {
+      return [
+        createDiffNode(key, DIFF_NODE_STATUS.removed, value1),
+        createDiffNode(key, DIFF_NODE_STATUS.added, value2),
+      ];
+    }
+
+    return createDiffNode(key, DIFF_NODE_STATUS.unchanged, createDeepDiff(value1, value2));
   });
-
-  return diff;
-};
-
-const formatDiffForOutput = (diff) => {
-  const marginLeft = '  ';
-
-  const formattedDiff = diff
-    .map((line) => `${marginLeft}${line}`)
-    .join('\n');
-
-  return [
-    '{',
-    formattedDiff,
-    '}',
-  ].join('\n');
 };
 
 const readFile = (filepath) => {
@@ -69,10 +82,9 @@ const genDiff = (filepath1, filepath2) => {
   const obj1 = parseFile(data1);
   const obj2 = parseFile(data2);
 
-  const diff = createDiff(obj1, obj2);
-  const formattedDiff = formatDiffForOutput(diff);
+  const deepDiff = createDeepDiff(obj1, obj2);
 
-  return formattedDiff;
+  return deepDiff;
 };
 
 export default genDiff;
