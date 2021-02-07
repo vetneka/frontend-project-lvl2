@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import getFileParser from './parsers.js';
-import getDiffFormatter from './formatters.js';
+import getDiffFormatter from './formatters/index.js';
 
 const DIFF_NODE_STATUS = {
   added: 'added',
@@ -85,7 +85,7 @@ const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
   const obj2 = parseFile(data2);
 
   const deepDiff = createDeepDiff(obj1, obj2);
-  // console.log(JSON.stringify(deepDiff, null, 2))
+
   const formatDiff = getDiffFormatter(formatName);
   const formattedDiff = formatDiff(deepDiff);
 
