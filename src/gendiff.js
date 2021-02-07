@@ -8,24 +8,28 @@ const DIFF_NODE_STATUS = {
   added: 'added',
   removed: 'removed',
   unchanged: 'unchanged',
+  updated: 'updated',
 };
 
-const createDiffNode = (name, status, value) => {
+const createDiffNode = (name, status, currentValue, previewValue = '') => {
   const diffNode = {
     name,
     status,
-    value,
+    currentValue,
+    previewValue,
   };
 
-  if (_.isArray(value)) {
-    diffNode.type = 'array';
-  } else if (_.isObject(value)) {
-    diffNode.type = 'object';
+  let diffNodeType;
+
+  if (_.isArray(currentValue)) {
+    diffNodeType = 'array';
+  } else if (_.isObject(currentValue)) {
+    diffNodeType = 'object';
   } else {
-    diffNode.type = 'primitive';
+    diffNodeType = 'primitive';
   }
 
-  return diffNode;
+  return { ...diffNode, type: diffNodeType };
 };
 
 const createDeepDiff = (obj1 = {}, obj2 = {}) => {
@@ -49,10 +53,7 @@ const createDeepDiff = (obj1 = {}, obj2 = {}) => {
     }
 
     if (!_.isObject(value1) || !_.isObject(value2)) {
-      return [
-        createDiffNode(key, DIFF_NODE_STATUS.removed, value1),
-        createDiffNode(key, DIFF_NODE_STATUS.added, value2),
-      ];
+      return createDiffNode(key, DIFF_NODE_STATUS.updated, value2, value1);
     }
 
     return createDiffNode(key, DIFF_NODE_STATUS.unchanged, createDeepDiff(value1, value2));
@@ -84,7 +85,7 @@ const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
   const obj2 = parseFile(data2);
 
   const deepDiff = createDeepDiff(obj1, obj2);
-
+  // console.log(JSON.stringify(deepDiff, null, 2))
   const formatDiff = getDiffFormatter(formatName);
   const formattedDiff = formatDiff(deepDiff);
 

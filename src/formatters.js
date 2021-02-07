@@ -5,6 +5,7 @@ const formatToStylish = (diff) => {
     added: '+',
     removed: '-',
     unchanged: ' ',
+    updated: ' ',
   };
 
   const SPACES_COUNT = 4;
@@ -13,20 +14,26 @@ const formatToStylish = (diff) => {
   const iter = (node, depth) => {
     const currentValue = node;
 
+    const indentSize = SPACES_COUNT * depth;
+    const bracketIndent = REPLACER.repeat(indentSize - SPACES_COUNT);
+
     if (!_.isObject(currentValue)) {
       return currentValue;
     }
 
-    const indentSize = SPACES_COUNT * depth;
-    const bracketIndent = REPLACER.repeat(indentSize - SPACES_COUNT);
-
     const lines = (_.isArray(currentValue))
-      ? currentValue
-        .map((child) => {
-          const currentStatusSymbol = DIFF_NODE_STATUS_SYMBOL[child.status];
-          const currentIndent = `${REPLACER.repeat(indentSize - 2)}${currentStatusSymbol}${REPLACER}`;
-          return `${currentIndent}${child.name}: ${iter(child.value, depth + 1)}`;
-        })
+      ? currentValue.map((child) => {
+        const currentStatusSymbol = DIFF_NODE_STATUS_SYMBOL[child.status];
+        const currentIndent = `${REPLACER.repeat(indentSize - 2)}${currentStatusSymbol}${REPLACER}`;
+
+        if (child.status === 'updated') {
+          const currentIndentForRemove = `${REPLACER.repeat(indentSize - 2)}${DIFF_NODE_STATUS_SYMBOL.removed}${REPLACER}`;
+          const currentIndentForAdded = `${REPLACER.repeat(indentSize - 2)}${DIFF_NODE_STATUS_SYMBOL.added}${REPLACER}`;
+          return `${currentIndentForRemove}${child.name}: ${iter(child.previewValue, depth + 1)}\n${currentIndentForAdded}${child.name}: ${iter(child.currentValue, depth + 1)}`;
+        }
+
+        return `${currentIndent}${child.name}: ${iter(child.currentValue, depth + 1)}`;
+      })
       : Object.entries(currentValue)
         .map(([key, value]) => {
           const currentIndent = REPLACER.repeat(indentSize);
