@@ -69,6 +69,10 @@ Property 'group2' was removed
 Property 'group3' was added with value: [complex value]`
 );
 
+const jsonDiff = (
+  '[{"name":"common","status":"unchanged","currentValue":[{"name":"follow","status":"added","currentValue":false,"previewValue":"","type":"primitive"},{"name":"setting1","status":"unchanged","currentValue":"Value 1","previewValue":"","type":"primitive"},{"name":"setting2","status":"removed","currentValue":200,"previewValue":"","type":"primitive"},{"name":"setting3","status":"updated","currentValue":null,"previewValue":true,"type":"primitive"},{"name":"setting4","status":"added","currentValue":"blah blah","previewValue":"","type":"primitive"},{"name":"setting5","status":"added","currentValue":{"key5":"value5"},"previewValue":"","type":"object"},{"name":"setting6","status":"unchanged","currentValue":[{"name":"doge","status":"unchanged","currentValue":[{"name":"wow","status":"updated","currentValue":"so much","previewValue":"","type":"primitive"}],"previewValue":"","type":"array"},{"name":"key","status":"unchanged","currentValue":"value","previewValue":"","type":"primitive"},{"name":"ops","status":"added","currentValue":"vops","previewValue":"","type":"primitive"}],"previewValue":"","type":"array"}],"previewValue":"","type":"array"},{"name":"group1","status":"unchanged","currentValue":[{"name":"baz","status":"updated","currentValue":"bars","previewValue":"bas","type":"primitive"},{"name":"foo","status":"unchanged","currentValue":"bar","previewValue":"","type":"primitive"},{"name":"nest","status":"updated","currentValue":"str","previewValue":{"key":"value"},"type":"primitive"}],"previewValue":"","type":"array"},{"name":"group2","status":"removed","currentValue":{"abc":12345,"deep":{"id":45}},"previewValue":"","type":"object"},{"name":"group3","status":"added","currentValue":{"fee":100500,"deep":{"id":{"number":45}}},"previewValue":"","type":"object"}]'
+);
+
 describe('compare flat files (JSON)', () => {
   it('test 1', () => {
     expect.hasAssertions();
@@ -108,5 +112,25 @@ describe('plain formatter', () => {
     const filepath2 = getFixturePath('file2.yml');
 
     expect(genDiff(filepath1, filepath2, 'plain')).toStrictEqual(plainDiff);
+  });
+});
+
+describe('json formatter', () => {
+  it('json files', () => {
+    expect.hasAssertions();
+
+    const filepath1 = getFixturePath('file1.yml');
+    const filepath2 = getFixturePath('file2.yml');
+
+    expect(genDiff(filepath1, filepath2, 'json')).toStrictEqual(jsonDiff);
+  });
+
+  it('yml files', () => {
+    expect.hasAssertions();
+
+    const filepath1 = getFixturePath('file1.yml');
+    const filepath2 = getFixturePath('file2.yml');
+
+    expect(genDiff(filepath1, filepath2, 'json')).toStrictEqual(jsonDiff);
   });
 });
