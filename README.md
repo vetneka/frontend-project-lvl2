@@ -13,6 +13,7 @@ This is the second training project as part of the Hexlet course in the frontend
 | `5`     | Comparison of flat files (YML)          | [link](https://asciinema.org/a/388393)  |
 | `6`     | Recursive comparison json and yml files | [link](https://asciinema.org/a/389284)  |
 | `7`     | Add plain formatter                     | [link](https://asciinema.org/a/389699)  |
+| `8`     | Add json formatter                      | [link](https://asciinema.org/a/389842)  |
 
 # Install
 ```
