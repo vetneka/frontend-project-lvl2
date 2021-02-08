@@ -1,5 +1,6 @@
 import formatToStylish from './formatToStylish.js';
 import formatToPlain from './formatToPlain.js';
+import formatToJSON from './formatToJSON.js';
 
 const getDiffFormatter = (formatName) => {
   switch (formatName) {
@@ -9,8 +10,11 @@ const getDiffFormatter = (formatName) => {
     case 'plain':
       return formatToPlain;
 
+    case 'json':
+      return formatToJSON;
+
     default:
-      throw new Error(`Unexpected format ${formatName}.`);
+      throw new Error(`Unexpected format: ${formatName}.`);
   }
 };
 
