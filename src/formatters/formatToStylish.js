@@ -1,53 +1,76 @@
 import _ from 'lodash';
 
-const DIFF_NODE_STATUS_SYMBOL = {
+const nodeStatusSymbol = {
   added: '+',
   removed: '-',
   unchanged: ' ',
-  updated: ' ',
+  changed: ' ',
+  nested: ' ',
 };
 
-const SPACES_COUNT = 4;
-const REPLACER = ' ';
+const spacesCount = 4;
+const placeholder = ' ';
+
+const createIndent = (depth, type = nodeStatusSymbol.unchanged) => {
+  const indentSize = spacesCount * depth;
+  const indent = new Array(indentSize).fill(placeholder);
+
+  const symbolIndex = indent.length - 2;
+  indent[symbolIndex] = nodeStatusSymbol[type];
+
+  return indent.join('');
+};
+
+const stringify = (value, depth) => {
+  if (!_.isObject(value)) {
+    return value;
+  }
+
+  const indent = createIndent(depth);
+
+  const body = Object
+    .keys(value)
+    .map((key) => `\n${indent} ${key}: ${stringify(value[key], depth + 1)}`)
+    .join('');
+
+  return `{${body}\n${createIndent(depth - 1)} }`;
+};
+
+const getStylishLine = (node, depth, callback) => {
+  const {
+    key, type, prevValue, nextValue, childrens,
+  } = node;
+  const indent = createIndent(depth, type);
+
+  switch (type) {
+    case 'added':
+    case 'removed':
+    case 'unchanged':
+      return `\n${indent}${key}: ${stringify(prevValue, depth + 1)}`;
+
+    case 'changed': {
+      const indentRemove = createIndent(depth, 'removed');
+      const indentAdded = createIndent(depth, 'added');
+
+      return [
+        `\n${indentRemove}${key}: ${stringify(prevValue, depth + 1)}`,
+        `\n${indentAdded}${key}: ${stringify(nextValue, depth + 1)}`,
+      ].join('');
+    }
+    case 'nested':
+      return `\n${indent}${key}: {${callback(childrens, depth + 1)}\n${indent}}`;
+
+    default:
+      throw new Error(`Unexpented node type: ${type}`);
+  }
+};
 
 const formatToStylish = (diff) => {
-  const iter = (node, depth) => {
-    const currentValue = node;
+  const iter = (nodes, depth) => nodes
+    .map((node) => getStylishLine(node, depth, iter))
+    .join('');
 
-    const indentSize = SPACES_COUNT * depth;
-    const bracketIndent = REPLACER.repeat(indentSize - SPACES_COUNT);
-
-    if (!_.isObject(currentValue)) {
-      return currentValue;
-    }
-
-    const lines = (_.isArray(currentValue))
-      ? currentValue.map((child) => {
-        const currentStatusSymbol = DIFF_NODE_STATUS_SYMBOL[child.status];
-        const currentIndent = `${REPLACER.repeat(indentSize - 2)}${currentStatusSymbol}${REPLACER}`;
-
-        if (child.status === 'updated') {
-          const currentIndentForRemove = `${REPLACER.repeat(indentSize - 2)}${DIFF_NODE_STATUS_SYMBOL.removed}${REPLACER}`;
-          const currentIndentForAdded = `${REPLACER.repeat(indentSize - 2)}${DIFF_NODE_STATUS_SYMBOL.added}${REPLACER}`;
-          return `${currentIndentForRemove}${child.name}: ${iter(child.previewValue, depth + 1)}\n${currentIndentForAdded}${child.name}: ${iter(child.currentValue, depth + 1)}`;
-        }
-
-        return `${currentIndent}${child.name}: ${iter(child.currentValue, depth + 1)}`;
-      })
-      : Object.entries(currentValue)
-        .map(([key, value]) => {
-          const currentIndent = REPLACER.repeat(indentSize);
-          return `${currentIndent}${key}: ${iter(value, depth + 1)}`;
-        });
-
-    return [
-      '{',
-      ...lines,
-      `${bracketIndent}}`,
-    ].join('\n');
-  };
-
-  return iter(diff, 1);
+  return ['{', iter(diff, 1), '\n}'].join('');
 };
 
 export default formatToStylish;
