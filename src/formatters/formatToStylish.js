@@ -13,11 +13,17 @@ const spacesCount = 4;
 const placeholder = ' ';
 
 const createIndent = (depth, type = nodeStatusSymbol.unchanged) => {
-  const indentSize = spacesCount * depth;
-  const indent = new Array(indentSize).fill(placeholder);
-
-  const symbolIndex = indent.length - 2;
-  indent[symbolIndex] = nodeStatusSymbol[type];
+  const tempIndent = placeholder.repeat(spacesCount * depth);
+  const symbolIndex = tempIndent.length - 2;
+  const indent = Array.from(
+    tempIndent,
+    (item, index) => {
+      if (index === symbolIndex) {
+        return nodeStatusSymbol[type];
+      }
+      return item;
+    },
+  );
 
   return indent.join('');
 };

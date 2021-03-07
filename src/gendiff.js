@@ -19,7 +19,7 @@ const createDiffNode = (key, type, prevValue, nextValue, childrens = null) => {
 
 const createDiff = (obj1, obj2) => {
   const unionKeys = _.union(Object.keys(obj1), Object.keys(obj2));
-  const sortedUnionKeys = unionKeys.sort();
+  const sortedUnionKeys = _.sortBy(unionKeys);
 
   return sortedUnionKeys.flatMap((key) => {
     const value1 = obj1[key];
