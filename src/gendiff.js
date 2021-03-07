@@ -1,16 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
+import nodeTypes from './consts.js';
 import getFileParser from './parsers.js';
 import getDiffFormatter from './formatters/index.js';
-
-const nodeTypes = {
-  added: 'added',
-  removed: 'removed',
-  unchanged: 'unchanged',
-  changed: 'changed',
-  nested: 'nested',
-};
 
 const createDiffNode = (key, type, prevValue, nextValue, childrens = null) => {
   const diffNode = {

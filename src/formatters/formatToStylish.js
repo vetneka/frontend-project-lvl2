@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import nodeTypes from '../consts.js';
 
 const nodeStatusSymbol = {
   added: '+',
@@ -43,12 +44,12 @@ const getStylishLine = (node, depth, callback) => {
   const indent = createIndent(depth, type);
 
   switch (type) {
-    case 'added':
-    case 'removed':
-    case 'unchanged':
+    case nodeTypes.added:
+    case nodeTypes.removed:
+    case nodeTypes.unchanged:
       return `\n${indent}${key}: ${stringify(prevValue, depth + 1)}`;
 
-    case 'changed': {
+    case nodeTypes.changed: {
       const indentRemove = createIndent(depth, 'removed');
       const indentAdded = createIndent(depth, 'added');
 
@@ -57,7 +58,7 @@ const getStylishLine = (node, depth, callback) => {
         `\n${indentAdded}${key}: ${stringify(nextValue, depth + 1)}`,
       ].join('');
     }
-    case 'nested':
+    case nodeTypes.nested:
       return `\n${indent}${key}: {${callback(childrens, depth + 1)}\n${indent}}`;
 
     default:

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import nodeTypes from '../consts.js';
 
 const stringify = (value) => {
   if (_.isObject(value)) {
@@ -14,16 +15,16 @@ const getPlainLine = (node, path, callback) => {
   const currentPath = [...path, key].join('.');
 
   switch (type) {
-    case 'added':
+    case nodeTypes.added:
       return `Property '${currentPath}' was added with value: ${stringify(prevValue)}`;
 
-    case 'removed':
+    case nodeTypes.removed:
       return `Property '${currentPath}' was removed`;
 
-    case 'changed':
+    case nodeTypes.changed:
       return `Property '${currentPath}' was updated. From ${stringify(prevValue)} to ${stringify(nextValue)}`;
 
-    case 'nested':
+    case nodeTypes.nested:
       return callback(childrens, [...path, key]);
 
     default:
