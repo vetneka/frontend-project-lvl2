@@ -1,70 +1,40 @@
 import _ from 'lodash';
 
-const messages = [
-  {
-    name: 'added',
-    create: (path, status, currentValue) => `Property '${path}' was ${status} with value: ${currentValue}`,
-  },
-  {
-    name: 'removed',
-    create: (path, status) => `Property '${path}' was ${status}`,
-  },
-  {
-    name: 'updated',
-    create: (path, status, currentValue, previewValue) => `Property '${path}' was ${status}. From ${previewValue} to ${currentValue}`,
-  },
-];
+const stringify = (value) => {
+  if (_.isObject(value)) {
+    return '[complex value]';
+  }
+  return `${(_.isString(value)) ? `'${value}'` : value}`;
+};
 
-const getNodeMessage = (node) => messages.find((message) => message.name === node.status);
+const getPlainLine = (node, path, callback) => {
+  const {
+    key, type, prevValue, nextValue, childrens,
+  } = node;
+  const currentPath = [...path, key].join('.');
+
+  switch (type) {
+    case 'added':
+      return `Property '${currentPath}' was added with value: ${stringify(prevValue)}`;
+
+    case 'removed':
+      return `Property '${currentPath}' was removed`;
+
+    case 'changed':
+      return `Property '${currentPath}' was updated. From ${stringify(prevValue)} to ${stringify(nextValue)}`;
+
+    case 'nested':
+      return callback(childrens, [...path, key]);
+
+    default:
+      return '';
+  }
+};
 
 const formatToPlain = (diff) => {
-  const iter = (node, fullPath) => {
-    if (_.isArray(node)) {
-      return node
-        .map((child) => iter(child, [...fullPath, child.name]))
-        .join('\n');
-    }
+  const iter = (nodes, path) => nodes.flatMap((node) => getPlainLine(node, path, iter));
 
-    const { previewValue, currentValue } = node;
-
-    if (node.status === 'unchanged' && _.isObject(currentValue)) {
-      return currentValue
-        .map((child) => iter(child, [...fullPath, child.name]))
-        .filter((child) => child)
-        .join('\n');
-    }
-
-    if (node.status !== 'unchanged') {
-      const { name, create } = getNodeMessage(node);
-
-      let prevValue;
-      let curValue;
-
-      if (_.isObject(previewValue)) {
-        prevValue = '[complex value]';
-      } else if (typeof previewValue === 'string') {
-        prevValue = `'${previewValue}'`;
-      } else {
-        prevValue = previewValue;
-      }
-
-      if (_.isObject(currentValue)) {
-        curValue = '[complex value]';
-      } else if (typeof currentValue === 'string') {
-        curValue = `'${currentValue}'`;
-      } else {
-        curValue = currentValue;
-      }
-
-      const message = create(fullPath.join('.'), name, curValue, prevValue);
-
-      return message;
-    }
-
-    return '';
-  };
-
-  return iter(diff, []);
+  return iter(diff, []).filter((node) => node).join('\n');
 };
 
 export default formatToPlain;
