@@ -70,28 +70,35 @@ Property 'group3' was added with value: [complex value]`
 );
 
 const jsonDiff = (
-  '[{"name":"common","status":"unchanged","currentValue":[{"name":"follow","status":"added","currentValue":false,"previewValue":"","type":"primitive"},{"name":"setting1","status":"unchanged","currentValue":"Value 1","previewValue":"","type":"primitive"},{"name":"setting2","status":"removed","currentValue":200,"previewValue":"","type":"primitive"},{"name":"setting3","status":"updated","currentValue":null,"previewValue":true,"type":"primitive"},{"name":"setting4","status":"added","currentValue":"blah blah","previewValue":"","type":"primitive"},{"name":"setting5","status":"added","currentValue":{"key5":"value5"},"previewValue":"","type":"object"},{"name":"setting6","status":"unchanged","currentValue":[{"name":"doge","status":"unchanged","currentValue":[{"name":"wow","status":"updated","currentValue":"so much","previewValue":"","type":"primitive"}],"previewValue":"","type":"array"},{"name":"key","status":"unchanged","currentValue":"value","previewValue":"","type":"primitive"},{"name":"ops","status":"added","currentValue":"vops","previewValue":"","type":"primitive"}],"previewValue":"","type":"array"}],"previewValue":"","type":"array"},{"name":"group1","status":"unchanged","currentValue":[{"name":"baz","status":"updated","currentValue":"bars","previewValue":"bas","type":"primitive"},{"name":"foo","status":"unchanged","currentValue":"bar","previewValue":"","type":"primitive"},{"name":"nest","status":"updated","currentValue":"str","previewValue":{"key":"value"},"type":"primitive"}],"previewValue":"","type":"array"},{"name":"group2","status":"removed","currentValue":{"abc":12345,"deep":{"id":45}},"previewValue":"","type":"object"},{"name":"group3","status":"added","currentValue":{"fee":100500,"deep":{"id":{"number":45}}},"previewValue":"","type":"object"}]'
+  '[{"key":"common","type":"nested","childrens":[{"key":"follow","type":"added","prevValue":false,"childrens":null},{"key":"setting1","type":"unchanged","prevValue":"Value 1","childrens":null},{"key":"setting2","type":"removed","prevValue":200,"childrens":null},{"key":"setting3","type":"changed","prevValue":true,"nextValue":null,"childrens":null},{"key":"setting4","type":"added","prevValue":"blah blah","childrens":null},{"key":"setting5","type":"added","prevValue":{"key5":"value5"},"childrens":null},{"key":"setting6","type":"nested","childrens":[{"key":"doge","type":"nested","childrens":[{"key":"wow","type":"changed","prevValue":"","nextValue":"so much","childrens":null}]},{"key":"key","type":"unchanged","prevValue":"value","childrens":null},{"key":"ops","type":"added","prevValue":"vops","childrens":null}]}]},{"key":"group1","type":"nested","childrens":[{"key":"baz","type":"changed","prevValue":"bas","nextValue":"bars","childrens":null},{"key":"foo","type":"unchanged","prevValue":"bar","childrens":null},{"key":"nest","type":"changed","prevValue":{"key":"value"},"nextValue":"str","childrens":null}]},{"key":"group2","type":"removed","prevValue":{"abc":12345,"deep":{"id":45}},"childrens":null},{"key":"group3","type":"added","prevValue":{"fee":100500,"deep":{"id":{"number":45}}},"childrens":null}]'
 );
 
-describe('compare flat files (JSON)', () => {
-  it('test 1', () => {
+describe('stylish formatter', () => {
+  it('json files', () => {
     expect.hasAssertions();
 
     const filepath1 = getFixturePath('file1.json');
     const filepath2 = getFixturePath('file2.json');
 
-    expect(genDiff(filepath1, filepath2)).toStrictEqual(deepDiff);
+    expect(genDiff(filepath1, filepath2, 'stylish')).toStrictEqual(deepDiff);
   });
-});
 
-describe('compare flat files (YAML)', () => {
-  it('test 1', () => {
+  it('yml files', () => {
     expect.hasAssertions();
 
     const filepath1 = getFixturePath('file1.yml');
     const filepath2 = getFixturePath('file2.yml');
 
-    expect(genDiff(filepath1, filepath2)).toStrictEqual(deepDiff);
+    expect(genDiff(filepath1, filepath2, 'stylish')).toStrictEqual(deepDiff);
+  });
+
+  it('json and yaml files', () => {
+    expect.hasAssertions();
+
+    const filepath1 = getFixturePath('file1.json');
+    const filepath2 = getFixturePath('file2.yml');
+
+    expect(genDiff(filepath1, filepath2, 'stylish')).toStrictEqual(deepDiff);
   });
 });
 
@@ -99,8 +106,8 @@ describe('plain formatter', () => {
   it('json files', () => {
     expect.hasAssertions();
 
-    const filepath1 = getFixturePath('file1.yml');
-    const filepath2 = getFixturePath('file2.yml');
+    const filepath1 = getFixturePath('file1.json');
+    const filepath2 = getFixturePath('file2.json');
 
     expect(genDiff(filepath1, filepath2, 'plain')).toStrictEqual(plainDiff);
   });
@@ -109,6 +116,15 @@ describe('plain formatter', () => {
     expect.hasAssertions();
 
     const filepath1 = getFixturePath('file1.yml');
+    const filepath2 = getFixturePath('file2.yml');
+
+    expect(genDiff(filepath1, filepath2, 'plain')).toStrictEqual(plainDiff);
+  });
+
+  it('json and yaml files', () => {
+    expect.hasAssertions();
+
+    const filepath1 = getFixturePath('file1.json');
     const filepath2 = getFixturePath('file2.yml');
 
     expect(genDiff(filepath1, filepath2, 'plain')).toStrictEqual(plainDiff);
@@ -119,8 +135,8 @@ describe('json formatter', () => {
   it('json files', () => {
     expect.hasAssertions();
 
-    const filepath1 = getFixturePath('file1.yml');
-    const filepath2 = getFixturePath('file2.yml');
+    const filepath1 = getFixturePath('file1.json');
+    const filepath2 = getFixturePath('file2.json');
 
     expect(genDiff(filepath1, filepath2, 'json')).toStrictEqual(jsonDiff);
   });
@@ -129,6 +145,15 @@ describe('json formatter', () => {
     expect.hasAssertions();
 
     const filepath1 = getFixturePath('file1.yml');
+    const filepath2 = getFixturePath('file2.yml');
+
+    expect(genDiff(filepath1, filepath2, 'json')).toStrictEqual(jsonDiff);
+  });
+
+  it('json and yaml files', () => {
+    expect.hasAssertions();
+
+    const filepath1 = getFixturePath('file1.json');
     const filepath2 = getFixturePath('file2.yml');
 
     expect(genDiff(filepath1, filepath2, 'json')).toStrictEqual(jsonDiff);
