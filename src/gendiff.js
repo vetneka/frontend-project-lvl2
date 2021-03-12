@@ -5,23 +5,23 @@ import nodeTypes from './consts.js';
 import getFileParser from './parsers.js';
 import getDiffFormatter from './formatters/index.js';
 
-const createDiffNode = (key, type, prevValue, nextValue, childrens = null) => {
+const createDiffNode = (key, type, prevValue, nextValue, children = null) => {
   const diffNode = {
     key,
     type,
     prevValue,
     nextValue,
-    childrens,
+    children,
   };
 
   return diffNode;
 };
 
 const createDiff = (obj1, obj2) => {
-  const unionKeys = _.union(Object.keys(obj1), Object.keys(obj2));
-  const sortedUnionKeys = _.sortBy(unionKeys);
+  const unitedKeys = _.union(Object.keys(obj1), Object.keys(obj2));
+  const sortedUnitedKeys = _.sortBy(unitedKeys);
 
-  return sortedUnionKeys.flatMap((key) => {
+  return sortedUnitedKeys.flatMap((key) => {
     const value1 = obj1[key];
     const value2 = obj2[key];
 

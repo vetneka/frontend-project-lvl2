@@ -1,17 +1,17 @@
-import formatToStylish from './formatToStylish.js';
-import formatToPlain from './formatToPlain.js';
-import formatToJSON from './formatToJSON.js';
+import stylishFormatter from './stylish.js';
+import plainFormatter from './plain.js';
+import jsonFormatter from './json.js';
 
 const getDiffFormatter = (formatName) => {
   switch (formatName) {
     case 'stylish':
-      return formatToStylish;
+      return stylishFormatter;
 
     case 'plain':
-      return formatToPlain;
+      return plainFormatter;
 
     case 'json':
-      return formatToJSON;
+      return jsonFormatter;
 
     default:
       throw new Error(`Unexpected format: ${formatName}.`);

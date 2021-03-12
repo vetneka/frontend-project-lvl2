@@ -1,16 +1,16 @@
 import yaml from 'js-yaml';
 
-const parseToJSON = (data) => JSON.parse(data);
+const parseJSON = (data) => JSON.parse(data);
 
-const parseToYAML = (data) => yaml.load(data);
+const parseYAML = (data) => yaml.load(data);
 
 const getFileParser = (fileExtension) => {
   switch (fileExtension) {
     case 'json':
-      return parseToJSON;
+      return parseJSON;
 
     case 'yml':
-      return parseToYAML;
+      return parseYAML;
 
     default:
       throw new Error(`No parser for file with .${fileExtension} extension.`);
