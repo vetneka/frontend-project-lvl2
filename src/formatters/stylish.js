@@ -28,10 +28,10 @@ const formatNodeValue = (value, depth) => {
 
   const body = Object
     .keys(value)
-    .map((key) => `\n${prefix}${placeholder} ${key}: ${formatNodeValue(value[key], depth + 1)}`)
-    .join('');
+    .map((key) => `${prefix}${placeholder} ${key}: ${formatNodeValue(value[key], depth + 1)}`)
+    .join('\n');
 
-  return `{${body}\n${createPrefix(depth - 1)}  }`;
+  return `{\n${body}\n${createPrefix(depth - 1)}  }`;
 };
 
 const getStylishLine = (node, depth) => {
@@ -47,28 +47,28 @@ const getStylishLine = (node, depth) => {
       const symbolAdded = getNodeSymbol(nodeTypes.added);
 
       return [
-        `\n${prefix}${symbolRemove} ${key}: ${formatNodeValue(prevValue, depth + 1)}`,
-        `\n${prefix}${symbolAdded} ${key}: ${formatNodeValue(nextValue, depth + 1)}`,
-      ].join('');
+        `${prefix}${symbolRemove} ${key}: ${formatNodeValue(prevValue, depth + 1)}`,
+        `${prefix}${symbolAdded} ${key}: ${formatNodeValue(nextValue, depth + 1)}`,
+      ].join('\n');
     }
     case nodeTypes.nested: {
       const formattedSubNodes = children
         .map((subNode) => getStylishLine(subNode, depth + 1))
-        .join('');
+        .join('\n');
 
-      return `\n${prefix}${symbol} ${key}: {${formattedSubNodes}\n${createPrefix(depth)}  }`;
+      return `${prefix}${symbol} ${key}: {\n${formattedSubNodes}\n${createPrefix(depth)}  }`;
     }
     default:
-      return `\n${prefix}${symbol} ${key}: ${formatNodeValue(prevValue, depth + 1)}`;
+      return `${prefix}${symbol} ${key}: ${formatNodeValue(prevValue, depth + 1)}`;
   }
 };
 
 const formatToStylish = (diff) => {
-  const body = diff
+  const lines = diff
     .map((node) => getStylishLine(node, 1))
-    .join('');
+    .join('\n');
 
-  return ['{', body, '\n}'].join('');
+  return ['{\n', lines, '\n}'].join('');
 };
 
 export default formatToStylish;
