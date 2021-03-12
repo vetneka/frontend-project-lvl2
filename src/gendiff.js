@@ -1,8 +1,6 @@
-import fs from 'fs';
-import path from 'path';
 import _ from 'lodash';
 import nodeTypes from './consts.js';
-import getFileParser from './parsers.js';
+import parseFile from './parsers.js';
 import getDiffFormatter from './formatters/index.js';
 
 const createDiffNode = (key, type, prevValue, nextValue, children = null) => {
@@ -45,31 +43,14 @@ const createDiff = (obj1, obj2) => {
   });
 };
 
-const readFile = (filepath) => {
-  const fullFilepath = path.resolve(process.cwd(), filepath);
-  const data = fs.readFileSync(fullFilepath).toString();
-  return data;
-};
-
-const getFIleExtension = (filepath) => path.extname(filepath).slice(1);
-
 const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
-  const fileExtension1 = getFIleExtension(filepath1);
-  const fileExtension2 = getFIleExtension(filepath2);
+  const file1 = parseFile(filepath1);
+  const file2 = parseFile(filepath2);
 
-  const data1 = readFile(filepath1);
-  const data2 = readFile(filepath2);
+  const diff = createDiff(file1, file2);
 
-  const parseFile1 = getFileParser(fileExtension1);
-  const parseFile2 = getFileParser(fileExtension2);
-
-  const obj1 = parseFile1(data1);
-  const obj2 = parseFile2(data2);
-
-  const deepDiff = createDiff(obj1, obj2);
-
-  const formatDiff = getDiffFormatter(formatName);
-  const formattedDiff = formatDiff(deepDiff);
+  const formatter = getDiffFormatter(formatName);
+  const formattedDiff = formatter(diff);
 
   return formattedDiff;
 };
