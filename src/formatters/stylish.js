@@ -17,7 +17,10 @@ const getNodeSymbol = (type) => {
   }
 };
 
-const createPrefix = (depth) => placeholder.repeat((spacesCount * depth) - 2);
+const createPrefix = (depth) => {
+  const reservedSpaceForSymbol = 2;
+  return placeholder.repeat((spacesCount * depth) - reservedSpaceForSymbol);
+};
 
 const formatNodeValue = (value, depth) => {
   if (!_.isObject(value)) {
