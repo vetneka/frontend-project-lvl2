@@ -3,18 +3,6 @@ import nodeTypes from './consts.js';
 import parseFile from './parsers.js';
 import getDiffFormatter from './formatters/index.js';
 
-const createDiffNode = (key, type, prevValue, nextValue, children = null) => {
-  const diffNode = {
-    key,
-    type,
-    prevValue,
-    nextValue,
-    children,
-  };
-
-  return diffNode;
-};
-
 const createDiff = (obj1, obj2) => {
   const unitedKeys = _.union(Object.keys(obj1), Object.keys(obj2));
   const sortedUnitedKeys = _.sortBy(unitedKeys);
@@ -24,22 +12,43 @@ const createDiff = (obj1, obj2) => {
     const value2 = obj2[key];
 
     if (!_.has(obj1, key)) {
-      return createDiffNode(key, nodeTypes.added, value2);
+      return {
+        key,
+        type: nodeTypes.added,
+        prevValue: value2,
+      };
     }
 
     if (!_.has(obj2, key)) {
-      return createDiffNode(key, nodeTypes.removed, value1);
+      return {
+        key,
+        type: nodeTypes.removed,
+        prevValue: value1,
+      };
     }
 
     if (value1 === value2) {
-      return createDiffNode(key, nodeTypes.unchanged, value1);
+      return {
+        key,
+        type: nodeTypes.unchanged,
+        prevValue: value1,
+      };
     }
 
     if (!_.isObject(value1) || !_.isObject(value2)) {
-      return createDiffNode(key, nodeTypes.changed, value1, value2);
+      return {
+        key,
+        type: nodeTypes.changed,
+        prevValue: value1,
+        nextValue: value2,
+      };
     }
 
-    return createDiffNode(key, nodeTypes.nested, undefined, undefined, createDiff(value1, value2));
+    return {
+      key,
+      type: nodeTypes.nested,
+      children: createDiff(value1, value2),
+    };
   });
 };
 
