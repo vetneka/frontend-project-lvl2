@@ -22,8 +22,28 @@ const yamlFilePath2 = getFixturePath('file2.yml');
 
 const formatters = ['stylish', 'plain', 'json'];
 
+describe('check genDiff with default formatter', () => {
+  const stylishDiff = readFile('stylishDiff.txt');
+
+  it('default formatter', () => {
+    expect.hasAssertions();
+    expect(genDiff(jsonFilePath1, jsonFilePath2)).toStrictEqual(stylishDiff);
+  });
+});
+
+describe('check json formatter output is valid json', () => {
+  it('valid json', () => {
+    expect.hasAssertions();
+
+    const jsonDiff = genDiff(jsonFilePath1, jsonFilePath2, 'json');
+    const parseJSON = () => JSON.parse(jsonDiff);
+
+    expect(parseJSON).not.toThrow();
+  });
+});
+
 const testFormatter = (type) => {
-  describe(`${type} formatter`, () => {
+  describe(`${type} formatter output`, () => {
     const diff = readFile(`${type}Diff.txt`);
 
     it('json files', () => {
