@@ -35,19 +35,19 @@ const createDiff = (obj1, obj2) => {
       };
     }
 
-    if (!_.isObject(value1) || !_.isObject(value2)) {
+    if (_.isObject(value1) && _.isObject(value2)) {
       return {
         key,
-        type: nodeTypes.changed,
-        prevValue: value1,
-        nextValue: value2,
+        type: nodeTypes.nested,
+        children: createDiff(value1, value2),
       };
     }
 
     return {
       key,
-      type: nodeTypes.nested,
-      children: createDiff(value1, value2),
+      type: nodeTypes.changed,
+      prevValue: value1,
+      nextValue: value2,
     };
   });
 };
