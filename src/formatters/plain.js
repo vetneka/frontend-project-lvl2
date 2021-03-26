@@ -41,9 +41,8 @@ const getPlainLine = (node, path) => {
   }
 };
 
-const plainFormatter = (diff) => diff
+const formatPlain = (diff) => diff
   .flatMap((node) => getPlainLine(node, []))
-  .filter((node) => node)
-  .join('\n');
+  .filter((node) => node);
 
-export default plainFormatter;
+export default (diff) => formatPlain(diff).join('\n');

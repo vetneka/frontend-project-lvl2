@@ -71,12 +71,10 @@ const getStylishLine = (node, depth) => {
   }
 };
 
-const formatToStylish = (diff) => {
-  const lines = diff
-    .map((node) => getStylishLine(node, 1))
-    .join('\n');
+const formatStylish = (diff) => {
+  const lines = diff.map((node) => getStylishLine(node, 1));
 
-  return ['{\n', lines, '\n}'].join('');
+  return ['{', ...lines, '}'];
 };
 
-export default formatToStylish;
+export default (diff) => formatStylish(diff).join('\n');
