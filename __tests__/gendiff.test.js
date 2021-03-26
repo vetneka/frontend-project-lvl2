@@ -1,18 +1,7 @@
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import path, { dirname } from 'path';
-
+import { readFile, createPath } from '../src/utils/file.js';
 import genDiff from '../index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-
-const readFile = (filename) => {
-  const absolutePath = getFixturePath(filename);
-  return fs.readFileSync(absolutePath).toString();
-};
+const getFixturePath = (filepath) => createPath('__fixtures__', filepath);
 
 const jsonFilePath1 = getFixturePath('file1.json');
 const jsonFilePath2 = getFixturePath('file2.json');
@@ -34,7 +23,7 @@ const expectedDiffs = {};
 
 beforeAll(() => {
   supportedFormats.forEach((format) => {
-    expectedDiffs[format] = readFile(`${format}Diff.txt`);
+    expectedDiffs[format] = readFile(getFixturePath(`${format}Diff.txt`));
   });
 });
 
