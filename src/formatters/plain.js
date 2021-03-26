@@ -33,8 +33,11 @@ const getPlainLine = (node, path) => {
       return children
         .flatMap((child) => getPlainLine(child, [...path, key]));
 
-    default:
+    case nodeTypes.unchanged:
       return '';
+
+    default:
+      throw new Error(`Unexpected node type: ${type}.`);
   }
 };
 
