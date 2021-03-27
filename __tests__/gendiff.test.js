@@ -1,7 +1,7 @@
 import { readFile, createPath } from '../src/utils/file.js';
 import genDiff from '../index.js';
 
-const getFixturePath = (filepath) => createPath('__fixtures__', filepath);
+const getFixturePath = (filepath) => createPath(['__fixtures__', filepath]);
 
 const jsonFilePath1 = getFixturePath('file1.json');
 const jsonFilePath2 = getFixturePath('file2.json');
@@ -19,11 +19,11 @@ const getCombinations = (formats, extensions) => {
 
 const combinations = getCombinations(supportedFormats, supportedExtensions);
 
-const expectedDiffs = {};
+const expectedDiffs = new Map();
 
 beforeAll(() => {
   supportedFormats.forEach((format) => {
-    expectedDiffs[format] = readFile(getFixturePath(`${format}Diff.txt`));
+    expectedDiffs.set(format, readFile(getFixturePath(`${format}Diff.txt`)));
   });
 });
 
@@ -37,7 +37,7 @@ test('json-formatter output is valid json', () => {
 test('check genDiff with default formatter', () => {
   const stylishDiff = genDiff(jsonFilePath1, jsonFilePath2);
 
-  expect(expectedDiffs.stylish).toStrictEqual(stylishDiff);
+  expect(expectedDiffs.get('stylish')).toStrictEqual(stylishDiff);
 });
 
 test.each(combinations)(
@@ -47,7 +47,7 @@ test.each(combinations)(
     const filePath2 = getFixturePath(`file2.${extension2}`);
 
     const receivedDiff = genDiff(filePath1, filePath2, format);
-    const expectedDiff = expectedDiffs[format];
+    const expectedDiff = expectedDiffs.get(format);
 
     expect(receivedDiff).toStrictEqual(expectedDiff);
   },
