@@ -1,13 +1,11 @@
 import _ from 'lodash';
 import nodeTypes from './consts.js';
-import parseFile from './parsers.js';
-import getDiffFormatter from './formatters/index.js';
 
-const createDiff = (obj1, obj2) => {
+const createDiffTree = (obj1, obj2) => {
   const unitedKeys = _.union(Object.keys(obj1), Object.keys(obj2));
   const sortedUnitedKeys = _.sortBy(unitedKeys);
 
-  return sortedUnitedKeys.flatMap((key) => {
+  return sortedUnitedKeys.map((key) => {
     const value1 = obj1[key];
     const value2 = obj2[key];
 
@@ -35,33 +33,21 @@ const createDiff = (obj1, obj2) => {
       };
     }
 
-    if (!_.isObject(value1) || !_.isObject(value2)) {
+    if (_.isObject(value1) && _.isObject(value2)) {
       return {
         key,
-        type: nodeTypes.changed,
-        prevValue: value1,
-        nextValue: value2,
+        type: nodeTypes.nested,
+        children: createDiffTree(value1, value2),
       };
     }
 
     return {
       key,
-      type: nodeTypes.nested,
-      children: createDiff(value1, value2),
+      type: nodeTypes.changed,
+      prevValue: value1,
+      nextValue: value2,
     };
   });
 };
 
-const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
-  const file1 = parseFile(filepath1);
-  const file2 = parseFile(filepath2);
-
-  const diff = createDiff(file1, file2);
-
-  const formatter = getDiffFormatter(formatName);
-  const formattedDiff = formatter(diff);
-
-  return formattedDiff;
-};
-
-export default genDiff;
+export default createDiffTree;

@@ -33,14 +33,16 @@ const getPlainLine = (node, path) => {
       return children
         .flatMap((child) => getPlainLine(child, [...path, key]));
 
-    default:
+    case nodeTypes.unchanged:
       return '';
+
+    default:
+      throw new Error(`Unexpected node type: ${type}.`);
   }
 };
 
-const plainFormatter = (diff) => diff
+const formatPlain = (diff) => diff
   .flatMap((node) => getPlainLine(node, []))
-  .filter((node) => node)
-  .join('\n');
+  .filter((node) => node);
 
-export default plainFormatter;
+export default (diff) => formatPlain(diff).join('\n');

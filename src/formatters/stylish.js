@@ -45,6 +45,11 @@ const getStylishLine = (node, depth) => {
   const symbol = getNodeSymbol(type);
 
   switch (type) {
+    case nodeTypes.added:
+    case nodeTypes.removed:
+    case nodeTypes.unchanged:
+      return `${prefix}${symbol} ${key}: ${formatNodeValue(prevValue, depth + 1)}`;
+
     case nodeTypes.changed: {
       const symbolRemove = getNodeSymbol(nodeTypes.removed);
       const symbolAdded = getNodeSymbol(nodeTypes.added);
@@ -62,16 +67,14 @@ const getStylishLine = (node, depth) => {
       return `${prefix}${symbol} ${key}: {\n${formattedSubNodes}\n${createPrefix(depth)}  }`;
     }
     default:
-      return `${prefix}${symbol} ${key}: ${formatNodeValue(prevValue, depth + 1)}`;
+      throw new Error(`Unexpected node type: ${type}.`);
   }
 };
 
-const formatToStylish = (diff) => {
-  const lines = diff
-    .map((node) => getStylishLine(node, 1))
-    .join('\n');
+const formatStylish = (diff) => {
+  const lines = diff.map((node) => getStylishLine(node, 1));
 
-  return ['{\n', lines, '\n}'].join('');
+  return ['{', ...lines, '}'];
 };
 
-export default formatToStylish;
+export default (diff) => formatStylish(diff).join('\n');
