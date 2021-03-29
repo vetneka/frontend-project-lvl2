@@ -13,7 +13,7 @@ const parseFile = (fileData, fileExtension) => {
       return parseYAML(fileData);
 
     default:
-      throw new Error(`No parser for file with .${fileExtension} extension.`);
+      throw new Error(`Unexpected file extension: ${fileExtension}.`);
   }
 };
 
